@@ -1,0 +1,15 @@
+PRINT "Program to print natural numbers "
+PRINT "Written in not Python"
+PRINT "\n"
+
+PRINT "Enter Limit \n"
+INPUT a
+
+LET i = 1
+
+WHILE i < a REPEAT
+    PRINT i
+    PRINT "\n"
+    LET i = i + 1
+ENDWHILE
+
