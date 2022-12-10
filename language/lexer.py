@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from language.constants import TokenType
-from language.errors.lexing_error import ExpectedCharacterError, InvalidCharacterError, UnknownTokenError
+from language.errors.lexing_error import ExpectedCharacterError, UnknownTokenError
 
 
 @dataclass()
@@ -10,7 +10,7 @@ class Token:
     kind: TokenType
 
     def __repr__(self):
-        return f"Token({self.kind}:{self.text})"
+        return f"Token({self.kind}:{repr(self.text)})"
 
     @classmethod
     def check_if_keyword(cls, tok_text):
@@ -90,6 +90,20 @@ class Lexer:
             else:
                 raise ExpectedCharacterError('!=', self.curChar, self.curPos)
 
+    def parse_brackets(self):
+        if self.curChar == '(':
+            return Token(self.curChar, TokenType.LPAREN)
+        elif self.curChar == ')':
+            return Token(self.curChar, TokenType.RPAREN)
+        elif self.curChar == '[':
+            return Token(self.curChar, TokenType.LBRACKET)
+        elif self.curChar == ']':
+            return Token(self.curChar, TokenType.RBRACKET)
+        elif self.curChar == '{':
+            return Token(self.curChar, TokenType.LBRACE)
+        elif self.curChar == '}':
+            return Token(self.curChar, TokenType.RBRACE)
+
     def parse_literals(self):
         if self.curChar == '\"':
             self.next_char()
@@ -137,7 +151,8 @@ class Lexer:
         self.skip_whitespace()
         self.skip_comment()
 
-        token = self.parse_special_symbols() or self.parse_operators() or self.parse_literals()
+        token = (self.parse_special_symbols() or self.parse_operators() or
+                 self.parse_literals() or self.parse_brackets())
 
         if token is None:
             raise UnknownTokenError(self.curChar, self.curPos)

@@ -14,11 +14,7 @@ class TokenType(enum.Enum):
     INPUT = 104
     LET = 105
     IF = 106
-    THEN = 107
-    ENDIF = 108
-    WHILE = 109
-    REPEAT = 110
-    ENDWHILE = 111
+    WHILE = 108
     # Operators.
     EQ = 201
     PLUS = 202
@@ -31,6 +27,13 @@ class TokenType(enum.Enum):
     LTEQ = 209
     GT = 210
     GTEQ = 211
+    # Brackets.
+    LPAREN = 301
+    RPAREN = 302
+    LBRACE = 303
+    RBRACE = 304
+    LBRACKET = 305
+    RBRACKET = 306
 
 
 COMPARISON_TOKENS = [
