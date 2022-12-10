@@ -1,15 +1,14 @@
-PRINT "Program to print natural numbers "
-PRINT "Written in not Python"
-PRINT "\n"
+PRINT "Program to print natural numbers Written in !Python \n"
 
 PRINT "Enter Limit \n"
-INPUT a
 
+INPUT a
 LET i = 1
 
-WHILE i < a REPEAT
-    PRINT i
-    PRINT "\n"
+PRINT "Printing numbers from " i " to " a "\n"
+
+WHILE i < a {
+    PRINT i "\n"
     LET i = i + 1
-ENDWHILE
+}
 

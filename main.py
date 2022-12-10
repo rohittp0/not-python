@@ -16,9 +16,9 @@ def main(source_file, output_file, debug=False):
     output_file = Path(output_file)
 
     if debug:
-        c_file = output_file.parent / f"{output_file.name}.c"
+        c_file = output_file.parent / f"{output_file.name}.cpp"
     else:
-        c_file = Path(tempfile.gettempdir()) / f"{random.randint(0, 10000)}{output_file.name}.c"
+        c_file = Path(tempfile.gettempdir()) / f"{random.randint(0, 10000)}{output_file.name}.cpp"
 
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -26,12 +26,16 @@ def main(source_file, output_file, debug=False):
     emitter = Emitter(c_file)
 
     parser = Parser(lexer, emitter)
-    parser.program()
 
     try:
-        subprocess.check_output(['gcc', str(c_file), '-o', str(output_file)])
-    except FileNotFoundError:
-        print("GCC not found. Please install GCC and try again.")
+        parser.program()
+    except Exception as e:
+        print(e)
+    else:
+        try:
+            subprocess.check_output(['g++', str(c_file), '-o', str(output_file)])
+        except FileNotFoundError:
+            print("G++ not found. Please install G++ and try again.")
     finally:
         if not debug:
             c_file.unlink()

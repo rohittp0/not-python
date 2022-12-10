@@ -4,6 +4,16 @@ from language.errors.parseing_error import ExpectedTokenError, InvalidTokenError
 from language.lexer import Lexer, Token
 
 
+class Variable:
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+    @property
+    def type(self):
+        return type(self.value)
+
+
 class Parser:
     def __init__(self, lexer: Lexer, emitter: Emitter):
         self.lexer: Lexer = lexer
@@ -30,8 +40,9 @@ class Parser:
         self.cur_token = self.peek_token
         self.peek_token = self.lexer.get_token()
 
-    def nl(self):
-        self.match(TokenType.NEWLINE)
+    def nl(self, throw=True):
+        if throw:
+            self.match(TokenType.NEWLINE)
 
         while self.check_token(TokenType.NEWLINE):
             self.next_token()
@@ -89,14 +100,17 @@ class Parser:
     def statement(self):
         if self.check_token(TokenType.PRINT):
             self.next_token()
+            self.emitter.emit(f"std::cout")
 
-            if self.check_token(TokenType.STRING):
-                self.emitter.emit_line(f"printf(\"{self.cur_token.text}\");")
-                self.next_token()
-            else:
-                self.emitter.emit("printf(\"%f\", (float)(")
-                self.expression()
-                self.emitter.emit_line("));")
+            while not self.check_token(TokenType.NEWLINE):
+                if self.check_token(TokenType.STRING):
+                    self.emitter.emit(f"<<\"{self.cur_token.text}\"")
+                    self.next_token()
+                else:
+                    self.emitter.emit("<<")
+                    self.expression()
+
+            self.emitter.emit_line(";")
 
         elif self.check_token(TokenType.IF):
             self.next_token()
@@ -107,10 +121,10 @@ class Parser:
             self.nl()
             self.emitter.emit_line("){")
 
-            while not self.check_token(TokenType.ENDIF):
+            while not self.check_token(TokenType.LBRACE):
                 self.statement()
 
-            self.match(TokenType.ENDIF)
+            self.match(TokenType.RBRACE)
             self.emitter.emit_line("}")
 
         elif self.check_token(TokenType.WHILE):
@@ -119,16 +133,18 @@ class Parser:
             self.emitter.emit("while(")
             self.comparison()
 
-            self.match(TokenType.REPEAT)
+            self.nl(throw=False)
+
+            self.match(TokenType.LBRACE)
             self.emitter.emit_line("){")
 
-            self.nl()
+            self.nl(throw=False)
 
             # Zero or more statements in the loop body.
-            while not self.check_token(TokenType.ENDWHILE):
+            while not self.check_token(TokenType.RBRACE):
                 self.statement()
 
-            self.match(TokenType.ENDWHILE)
+            self.match(TokenType.RBRACE)
             self.emitter.emit_line("}")
 
         elif self.check_token(TokenType.LET):
@@ -147,21 +163,25 @@ class Parser:
 
         elif self.check_token(TokenType.INPUT):
             self.next_token()
+            self.emitter.emit("std::cin")
 
-            if self.cur_token.text not in self.symbols:
-                self.symbols.add(self.cur_token.text)
-                self.emitter.header_line("float " + self.cur_token.text + ";")
+            while not self.check_token(TokenType.NEWLINE):
+                if self.cur_token.text not in self.symbols:
+                    self.symbols.add(self.cur_token.text)
+                    self.emitter.header_line("float " + self.cur_token.text + ";")
 
-            self.emitter.emit_line(f"scanf(\"%f\", &{self.cur_token.text});")
-            self.match(TokenType.IDENT)
+                self.emitter.emit(f">>{self.cur_token.text}")
+                self.match(TokenType.IDENT)
+
+            self.emitter.emit_line(";")
         else:
             raise InvalidTokenError(self.cur_token)
         # Newline.
         self.nl()
 
     def program(self):
-        self.emitter.header_line("#include <stdio.h>")
-        self.emitter.header_line("int main(void){")
+        self.emitter.header_line("#include <iostream>")
+        self.emitter.header_line("int main(int argc, char *argv[]){")
 
         while self.check_token(TokenType.NEWLINE):
             self.next_token()
