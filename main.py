@@ -29,16 +29,14 @@ def main(source_file, output_file, debug=False):
 
     try:
         parser.program()
+        subprocess.check_output(['g++', str(c_file), '-o', str(output_file)])
+    except FileNotFoundError:
+        print("G++ not found. Please install G++ and try again.")
     except Exception as e:
         print(e)
-    else:
-        try:
-            subprocess.check_output(['g++', str(c_file), '-o', str(output_file)])
-        except FileNotFoundError:
-            print("G++ not found. Please install G++ and try again.")
     finally:
         if not debug:
-            c_file.unlink()
+            c_file.unlink(missing_ok=True)
 
 
 if __name__ == '__main__':
