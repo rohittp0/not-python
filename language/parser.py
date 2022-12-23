@@ -68,9 +68,18 @@ class Parser:
         self.primary()
 
     def term(self):
+        if self.check_peek(TokenType.MODULO):
+            self.emitter.emit("(int)")
+
         self.unary()
-        while self.check_token(TokenType.ASTERISK) or self.check_token(TokenType.SLASH):
+
+        while self.check_token(TokenType.ASTERISK) or self.check_token(TokenType.SLASH) or \
+                self.check_token(TokenType.MODULO):
             self.emitter.emit(self.cur_token.text)
+
+            if self.check_token(TokenType.MODULO):
+                self.emitter.emit("(int)")
+
             self.next_token()
             self.unary()
 

@@ -58,6 +58,8 @@ class Lexer:
             return Token(self.curChar, TokenType.ASTERISK)
         elif self.curChar == '/':
             return Token(self.curChar, TokenType.SLASH)
+        elif self.curChar == '%':
+            return Token(self.curChar, TokenType.MODULO)
         elif self.curChar == '=':
             # Check whether this token is = or ==
             if self.peek() == '=':

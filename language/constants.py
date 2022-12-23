@@ -27,6 +27,7 @@ class TokenType(enum.Enum):
     LTEQ = 209
     GT = 210
     GTEQ = 211
+    MODULO = 212
     # Brackets.
     LPAREN = 301
     RPAREN = 302
