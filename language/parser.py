@@ -150,7 +150,7 @@ class Parser:
                 self.emitter.emit("else ")
 
                 if self.check_token(TokenType.IF):
-                    self.statement()
+                    return self.statement()
                 else:
                     self.nl(throw=False)
 
@@ -203,8 +203,7 @@ class Parser:
         else:
             raise InvalidTokenError(self.cur_token)
         # Newline.
-        if not self.check_token(TokenType.EOF):
-            self.nl()
+        self.nl()
 
     def program(self):
         self.emitter.header_line("#include <iostream>")
