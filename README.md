@@ -42,6 +42,7 @@ The following keywords are reserved in **!Python**:
 - LET
 - IF
 - WHILE
+- RETURN
 
 All keywords are case-sensitive, why would you want to write `print` instead of `PRINT` ? 🤷.
 
