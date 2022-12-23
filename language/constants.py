@@ -8,8 +8,8 @@ class TokenType(enum.Enum):
     IDENT = 2
     STRING = 3
     # Keywords.
-    LABEL = 101
-    GOTO = 102
+    RETURN = 101
+    ELSE = 102
     PRINT = 103
     INPUT = 104
     LET = 105

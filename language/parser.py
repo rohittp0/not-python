@@ -66,7 +66,7 @@ class Parser:
             self.emitter.emit(self.cur_token.text)
             self.next_token()
         self.primary()
-        
+
     def term(self):
         self.unary()
         while self.check_token(TokenType.ASTERISK) or self.check_token(TokenType.SLASH):
@@ -97,6 +97,26 @@ class Parser:
             self.next_token()
             self.expression()
 
+    def control_statement(self, keyword):
+        self.next_token()
+
+        self.emitter.emit(f"{keyword}(")
+        self.comparison()
+
+        self.nl(throw=False)
+
+        self.match(TokenType.LBRACE)
+        self.emitter.emit_line("){")
+
+        self.nl(throw=False)
+
+        # Zero or more statements in the loop body.
+        while not self.check_token(TokenType.RBRACE):
+            self.statement()
+
+        self.match(TokenType.RBRACE)
+        self.emitter.emit_line("}")
+
     def statement(self):
         if self.check_token(TokenType.PRINT):
             self.next_token()
@@ -113,39 +133,26 @@ class Parser:
             self.emitter.emit_line(";")
 
         elif self.check_token(TokenType.IF):
-            self.next_token()
+            self.control_statement("if")
 
-            self.emitter.emit("if(")
-            self.comparison()
+            if self.check_token(TokenType.ELSE):
+                self.next_token()
+                self.emitter.emit("else ")
 
-            self.nl()
-            self.emitter.emit_line("){")
+                if self.check_token(TokenType.IF):
+                    self.control_statement("if")
+                else:
+                    self.nl(throw=False)
+                    self.emitter.emit_line("{")
 
-            while not self.check_token(TokenType.LBRACE):
-                self.statement()
+                    while not self.check_token(TokenType.RBRACE):
+                        self.statement()
 
-            self.match(TokenType.RBRACE)
-            self.emitter.emit_line("}")
+                    self.match(TokenType.RBRACE)
+                    self.emitter.emit_line("}")
 
         elif self.check_token(TokenType.WHILE):
-            self.next_token()
-
-            self.emitter.emit("while(")
-            self.comparison()
-
-            self.nl(throw=False)
-
-            self.match(TokenType.LBRACE)
-            self.emitter.emit_line("){")
-
-            self.nl(throw=False)
-
-            # Zero or more statements in the loop body.
-            while not self.check_token(TokenType.RBRACE):
-                self.statement()
-
-            self.match(TokenType.RBRACE)
-            self.emitter.emit_line("}")
+            self.control_statement("while")
 
         elif self.check_token(TokenType.LET):
             self.next_token()
@@ -173,6 +180,11 @@ class Parser:
                 self.emitter.emit(f">>{self.cur_token.text}")
                 self.match(TokenType.IDENT)
 
+            self.emitter.emit_line(";")
+        elif self.check_token(TokenType.RETURN):
+            self.next_token()
+            self.emitter.emit("return ")
+            self.expression()
             self.emitter.emit_line(";")
         else:
             raise InvalidTokenError(self.cur_token)
