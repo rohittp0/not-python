@@ -11,7 +11,7 @@ compile the generated intermediate code.
 
 ## How to use
 
-1. Clone the repository
+1. Clone the [repository](https://github.com/rohittp0/not-python.git)
 2. Run `python3 main.py <filename>` to compile the file
 3. Run `<filename>.exe` to execute the program
 
