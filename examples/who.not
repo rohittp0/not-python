@@ -1,0 +1,32 @@
+PRINT "What programming language do you use?\n"
+PRINT "0. Java Script\n"
+PRINT "1. Python\n"
+PRINT "2. Assembly\n"
+PRINT "3. None\n"
+
+PRINT "Enter your choice: "
+INPUT choice
+
+IF choice == 0 {
+    PRINT "Hi Rohit\n"
+}
+ELSE IF choice == 1 {
+    PRINT "Hello Sunith.\n"
+}
+ELSE IF choice == 2 {
+    PRINT "x86 or ARM?\n(1 / 2): "
+    INPUT choice
+
+    IF choice == 1 {
+        PRINT "Hey Varsha.\n"
+    }
+    ELSE IF choice == 2 {
+        PRINT "You are insane\n"
+    }
+    ELSE {
+        PRINT "Hi, person who knows assembly but don't know how to select from given options\n"
+    }
+}
+ELSE {
+    PRINT "Why dont you try !Python\n"
+}

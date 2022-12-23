@@ -1,0 +1,21 @@
+PRINT "Hey Captain!\n"
+PRINT "We are approaching the airport, how do you want to land?\n"
+PRINT "1. Normal landing\n"
+PRINT "2. Hard landing\n"
+
+PRINT "Your choice: "
+INPUT choice
+
+IF choice == 1
+{
+    PRINT "Landed normally\n"
+    RETURN 0
+}
+ELSE IF choice == 2
+{
+    PRINT "Landed hard\n"
+    RETURN 1
+}
+
+PRINT "Invalid choice, plane exploded\n"
+RETURN 2

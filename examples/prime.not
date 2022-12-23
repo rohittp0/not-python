@@ -1,0 +1,23 @@
+PRINT "Enter number to check if it is prime or not: "
+INPUT number
+
+IF number == 1
+{
+    PRINT "1 is neither prime nor composite"
+    RETURN 0
+}
+
+LET i = 2
+
+WHILE i <= number / 2
+{
+    IF number % i == 0
+    {
+        PRINT number " is not a prime number"
+        RETURN 0
+    }
+
+    LET i = i + 1
+}
+
+PRINT number " is a prime number"
