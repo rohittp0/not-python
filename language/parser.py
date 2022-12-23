@@ -143,16 +143,21 @@ class Parser:
 
         elif self.check_token(TokenType.IF):
             self.control_statement("if")
+            self.nl(throw=False)
 
             if self.check_token(TokenType.ELSE):
                 self.next_token()
                 self.emitter.emit("else ")
 
                 if self.check_token(TokenType.IF):
-                    self.control_statement("if")
+                    self.statement()
                 else:
                     self.nl(throw=False)
+
+                    self.match(TokenType.LBRACE)
                     self.emitter.emit_line("{")
+
+                    self.nl(throw=False)
 
                     while not self.check_token(TokenType.RBRACE):
                         self.statement()
@@ -198,7 +203,8 @@ class Parser:
         else:
             raise InvalidTokenError(self.cur_token)
         # Newline.
-        self.nl()
+        if not self.check_token(TokenType.EOF):
+            self.nl()
 
     def program(self):
         self.emitter.header_line("#include <iostream>")
