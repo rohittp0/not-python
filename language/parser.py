@@ -164,6 +164,8 @@ class Parser:
 
                     self.match(TokenType.RBRACE)
                     self.emitter.emit_line("}")
+            else:
+                return
 
         elif self.check_token(TokenType.WHILE):
             self.control_statement("while")
