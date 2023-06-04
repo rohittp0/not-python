@@ -15,6 +15,7 @@ class TokenType(enum.Enum):
     LET = 105
     IF = 106
     WHILE = 108
+    NEW = 109
     # Operators.
     EQ = 201
     PLUS = 202

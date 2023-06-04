@@ -10,14 +10,14 @@ class Token:
     kind: TokenType
 
     def __repr__(self):
-        return f"Token({self.kind}:{repr(self.text)})"
+        return(f"Token({self.kind}:{repr(self.text)})")
 
     @classmethod
     def check_if_keyword(cls, tok_text):
         for kind in TokenType:
             # Relies on all keyword enum values being 1XX.
             if kind.name == tok_text and 100 <= kind.value < 200:
-                return kind
+                return(kind)
 
 
 class Lexer:
@@ -37,8 +37,8 @@ class Lexer:
 
     def peek(self):
         if self.curPos + 1 >= len(self.source):
-            return '\0'
-        return self.source[self.curPos + 1]
+            return('\0')
+        return(self.source[self.curPos + 1])
 
     def skip_whitespace(self):
         while self.curChar in [' ', '\t', '\r']:
@@ -51,60 +51,60 @@ class Lexer:
 
     def parse_operators(self):
         if self.curChar == '+':
-            return Token(self.curChar, TokenType.PLUS)
+            return(Token(self.curChar, TokenType.PLUS))
         elif self.curChar == '-':
-            return Token(self.curChar, TokenType.MINUS)
+            return(Token(self.curChar, TokenType.MINUS))
         elif self.curChar == '*':
-            return Token(self.curChar, TokenType.ASTERISK)
+            return(Token(self.curChar, TokenType.ASTERISK))
         elif self.curChar == '/':
-            return Token(self.curChar, TokenType.SLASH)
+            return(Token(self.curChar, TokenType.SLASH))
         elif self.curChar == '%':
-            return Token(self.curChar, TokenType.MODULO)
+            return(Token(self.curChar, TokenType.MODULO))
         elif self.curChar == '=':
             # Check whether this token is = or ==
             if self.peek() == '=':
                 lastChar = self.curChar
                 self.next_char()
-                return Token(lastChar + self.curChar, TokenType.EQEQ)
+                return(Token(lastChar + self.curChar, TokenType.EQEQ))
             else:
-                return Token(self.curChar, TokenType.EQ)
+                return(Token(self.curChar, TokenType.EQ))
         elif self.curChar == '>':
             # Check whether this is token is > or >=
             if self.peek() == '=':
                 lastChar = self.curChar
                 self.next_char()
-                return Token(lastChar + self.curChar, TokenType.GTEQ)
+                return(Token(lastChar + self.curChar, TokenType.GTEQ))
             else:
-                return Token(self.curChar, TokenType.GT)
+                return(Token(self.curChar, TokenType.GT))
         elif self.curChar == '<':
             # Check whether this is token is < or <=
             if self.peek() == '=':
                 lastChar = self.curChar
                 self.next_char()
-                return Token(lastChar + self.curChar, TokenType.LTEQ)
+                return(Token(lastChar + self.curChar, TokenType.LTEQ))
             else:
-                return Token(self.curChar, TokenType.LT)
+                return(Token(self.curChar, TokenType.LT))
         elif self.curChar == '!':
             if self.peek() == '=':
                 lastChar = self.curChar
                 self.next_char()
-                return Token(lastChar + self.curChar, TokenType.NOTEQ)
+                return(Token(lastChar + self.curChar, TokenType.NOTEQ))
             else:
                 raise ExpectedCharacterError('!=', self.curChar, self.curPos)
 
     def parse_brackets(self):
         if self.curChar == '(':
-            return Token(self.curChar, TokenType.LPAREN)
+            return(Token(self.curChar, TokenType.LPAREN))
         elif self.curChar == ')':
-            return Token(self.curChar, TokenType.RPAREN)
+            return(Token(self.curChar, TokenType.RPAREN))
         elif self.curChar == '[':
-            return Token(self.curChar, TokenType.LBRACKET)
+            return(Token(self.curChar, TokenType.LBRACKET))
         elif self.curChar == ']':
-            return Token(self.curChar, TokenType.RBRACKET)
+            return(Token(self.curChar, TokenType.RBRACKET))
         elif self.curChar == '{':
-            return Token(self.curChar, TokenType.LBRACE)
+            return(Token(self.curChar, TokenType.LBRACE))
         elif self.curChar == '}':
-            return Token(self.curChar, TokenType.RBRACE)
+            return(Token(self.curChar, TokenType.RBRACE))
 
     def parse_literals(self):
         if self.curChar == '\"':
@@ -115,7 +115,7 @@ class Lexer:
                 self.next_char()
 
             tokText = self.source[startPos: self.curPos]  # Get the substring.
-            return Token(tokText, TokenType.STRING)
+            return(Token(tokText, TokenType.STRING))
         elif self.curChar.isdigit():
             startPos = self.curPos
             while self.peek().isdigit():
@@ -130,7 +130,7 @@ class Lexer:
                     self.next_char()
 
             tokText = self.source[startPos: self.curPos + 1]
-            return Token(tokText, TokenType.NUMBER)
+            return(Token(tokText, TokenType.NUMBER))
         elif self.curChar.isalpha():
             startPos = self.curPos
             while self.peek().isalnum():
@@ -139,15 +139,15 @@ class Lexer:
             tokText = self.source[startPos: self.curPos + 1]
             keyword = Token.check_if_keyword(tokText)
             if keyword is None:  # Identifier
-                return Token(tokText, TokenType.IDENT)
+                return(Token(tokText, TokenType.IDENT))
             else:  # Keyword
-                return Token(tokText, keyword)
+                return(Token(tokText, keyword))
 
     def parse_special_symbols(self):
         if self.curChar == '\n':
-            return Token(self.curChar, TokenType.NEWLINE)
+            return(Token(self.curChar, TokenType.NEWLINE))
         elif self.curChar is None:
-            return Token('', TokenType.EOF)
+            return(Token('', TokenType.EOF))
 
     def get_token(self) -> Token:
         self.skip_whitespace()
@@ -160,4 +160,4 @@ class Lexer:
             raise UnknownTokenError(self.curChar, self.curPos)
 
         self.next_char()
-        return token
+        return(token)
