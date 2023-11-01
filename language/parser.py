@@ -22,6 +22,7 @@ class Parser:
         self.cur_token: Token = lexer.get_token()
         self.peek_token: Token = lexer.get_token()
 
+
         self.symbols = set()
 
     def check_token(self, kind):
@@ -70,26 +71,29 @@ class Parser:
     def term(self):
         if self.check_peek(TokenType.MODULO):
             self.emitter.emit("(int)")
+            
 
         self.unary()
 
         while self.check_token(TokenType.ASTERISK) or self.check_token(TokenType.SLASH) or \
-                self.check_token(TokenType.MODULO):
-            self.emitter.emit(self.cur_token.text)
-
+                self.check_token(TokenType.MODULO) :
+                    
             if self.check_token(TokenType.MODULO):
                 self.emitter.emit("(int)")
 
             self.next_token()
             self.unary()
+            
+        if self.check_token(TokenType.RAISEDTO):
+            self.exponentiation()
 
     def expression(self):
         self.term()
-        while self.check_token(TokenType.PLUS) or self.check_token(TokenType.MINUS):
+        while self.check_token(TokenType.PLUS) or self.check_token(TokenType.MINUS)  :
             self.emitter.emit(self.cur_token.text)
             self.next_token()
             self.term()
-
+            
     def comparison(self):
         self.expression()
         # Must be at least one comparison operator and another expression.
@@ -125,6 +129,14 @@ class Parser:
 
         self.match(TokenType.RBRACE)
         self.emitter.emit_line("}")
+        
+    def exponentiation(self):
+        self.emitter.emit("std::pow(")
+        self.emitter.emit(",")
+        self.next_token()
+        self.term()  # Emit the variable after **
+        self.emitter.emit(")")  # Close the pow function call
+
 
     def statement(self):
         if self.check_token(TokenType.PRINT):
@@ -209,6 +221,7 @@ class Parser:
 
     def program(self):
         self.emitter.header_line("#include <iostream>")
+        self.emitter.header_line("#include <cmath>")
         self.emitter.header_line("int main(int argc, char *argv[]){")
 
         while self.check_token(TokenType.NEWLINE):

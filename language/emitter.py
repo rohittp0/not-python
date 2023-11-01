@@ -17,3 +17,4 @@ class Emitter:
     def write_file(self):
         with open(self.file_path, 'w') as outputFile:
             outputFile.write(self.header + self.code)
+

@@ -39,6 +39,7 @@ class Lexer:
         if self.curPos + 1 >= len(self.source):
             return('\0')
         return(self.source[self.curPos + 1])
+    
 
     def skip_whitespace(self):
         while self.curChar in [' ', '\t', '\r']:
@@ -54,8 +55,6 @@ class Lexer:
             return(Token(self.curChar, TokenType.PLUS))
         elif self.curChar == '-':
             return(Token(self.curChar, TokenType.MINUS))
-        elif self.curChar == '*':
-            return(Token(self.curChar, TokenType.ASTERISK))
         elif self.curChar == '/':
             return(Token(self.curChar, TokenType.SLASH))
         elif self.curChar == '%':
@@ -91,6 +90,13 @@ class Lexer:
                 return(Token(lastChar + self.curChar, TokenType.NOTEQ))
             else:
                 raise ExpectedCharacterError('!=', self.curChar, self.curPos)
+        elif self.curChar == '*':
+            if self.peek() == '*':
+                lastChar = self.curChar
+                self.next_char()
+                return(Token(lastChar + self.curChar, TokenType.RAISEDTO))
+            else:
+                return(Token(self.curChar, TokenType.ASTERISK))                
 
     def parse_brackets(self):
         if self.curChar == '(':

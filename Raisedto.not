@@ -1,0 +1,6 @@
+
+LET a = 5
+LET b = 2
+
+LET result = a**b
+PRINT result
