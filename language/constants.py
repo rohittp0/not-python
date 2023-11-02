@@ -29,6 +29,7 @@ class TokenType(enum.Enum):
     GT = 210
     GTEQ = 211
     MODULO = 212
+    EXPOD=213
     # Brackets.
     LPAREN = 301
     RPAREN = 302
