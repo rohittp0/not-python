@@ -4,7 +4,6 @@ from language.errors.parseing_error import ExpectedTokenError, InvalidTokenError
 from language.lexer import Lexer, Token
 
 expF=False
-polar=None
 
 class Variable:
     def __init__(self, name, value):
@@ -51,14 +50,10 @@ class Parser:
 
     def primary(self):
         global expF
-        global polar
         if self.check_token(TokenType.NUMBER):
-            if polar!=None:
-                if self.check_peek(TokenType.EXPOD):
+            if self.check_peek(TokenType.EXPOD): # pow( should be present before our number
                     self.emitter.emit("pow(")
                     expF=False
-                self.emitter.emit(polar)
-                polar=None
             self.emitter.emit(self.cur_token.text)
             if expF:
                 self.emitter.emit(")")
@@ -75,9 +70,8 @@ class Parser:
             raise InvalidTokenError(self.cur_token)
 
     def unary(self):
-        global polar
         if self.check_token(TokenType.PLUS) or self.check_token(TokenType.MINUS):
-            polar=self.cur_token.text
+            self.emitter.emit(self.cur_token.text)
             self.next_token()
         
         self.primary()
@@ -87,16 +81,12 @@ class Parser:
         if self.check_peek(TokenType.MODULO):
             self.emitter.emit("(int)")
 
-        if self.check_peek(TokenType.EXPOD):
-            self.emitter.emit("pow(")
-            expF=False
-
         self.unary()
 
         while self.check_token(TokenType.ASTERISK) or self.check_token(TokenType.SLASH) or \
                 self.check_token(TokenType.MODULO) or self.check_token(TokenType.EXPOD):
             
-            if self.check_token(TokenType.EXPOD):
+            if self.check_token(TokenType.EXPOD): # , used in parameter seperation of pow function
                 self.emitter.emit(",")
                 expF=True
             else :

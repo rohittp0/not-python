@@ -1,12 +1,2 @@
-LET a = 5
-LET b = 2
-LET result = a**b
-PRINT a " raised to the power " b " is " result "\n"
-LET a = 4.5
-LET b = 2.5
-LET result = a**b
-PRINT a " raised to the power " b " is " result "\n"
-LET a = -3
-LET b = 3
-LET result = a**b
-PRINT a " raised to the power " b " is " result "\n"
+PRINT 3*3**3 "\n"
+PRINT -1**4
