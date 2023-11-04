@@ -6,7 +6,7 @@ float b;
 float result;
 a = 5;
 b = 2;
-result = astd::pow(,b);
+result = pow(a,b);
 std::cout<<result;
 return 0;
 }

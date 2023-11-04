@@ -22,7 +22,6 @@ class Parser:
         self.cur_token: Token = lexer.get_token()
         self.peek_token: Token = lexer.get_token()
 
-
         self.symbols = set()
 
     def check_token(self, kind):
@@ -53,6 +52,10 @@ class Parser:
             self.emitter.emit(self.cur_token.text)
             self.next_token()
 
+        elif self.check_peek(TokenType.RAISEDTO):
+            print("exponent detected")
+            self.exponent()
+
         elif self.check_token(TokenType.IDENT):
             if self.cur_token.text not in self.symbols:
                 raise UndefinedVariableError(self.cur_token.text)
@@ -71,29 +74,26 @@ class Parser:
     def term(self):
         if self.check_peek(TokenType.MODULO):
             self.emitter.emit("(int)")
-            
 
         self.unary()
 
         while self.check_token(TokenType.ASTERISK) or self.check_token(TokenType.SLASH) or \
-                self.check_token(TokenType.MODULO) :
-                    
+                self.check_token(TokenType.MODULO):
+            self.emitter.emit(self.cur_token.text)
+
             if self.check_token(TokenType.MODULO):
                 self.emitter.emit("(int)")
 
             self.next_token()
             self.unary()
-            
-        if self.check_token(TokenType.RAISEDTO):
-            self.exponentiation()
 
     def expression(self):
         self.term()
-        while self.check_token(TokenType.PLUS) or self.check_token(TokenType.MINUS)  :
+        while self.check_token(TokenType.PLUS) or self.check_token(TokenType.MINUS):
             self.emitter.emit(self.cur_token.text)
             self.next_token()
             self.term()
-            
+
     def comparison(self):
         self.expression()
         # Must be at least one comparison operator and another expression.
@@ -129,14 +129,19 @@ class Parser:
 
         self.match(TokenType.RBRACE)
         self.emitter.emit_line("}")
-        
-    def exponentiation(self):
-        self.emitter.emit("std::pow(")
+
+    def exponent(self):
+        print("from exponent")
+        print(self.cur_token.text)
+        print(self.peek_token.text)
+        self.emitter.emit("pow(")
+        self.emitter.emit(self.cur_token.text)
+        self.next_token()
         self.emitter.emit(",")
         self.next_token()
-        self.term()  # Emit the variable after **
-        self.emitter.emit(")")  # Close the pow function call
-
+        self.emitter.emit(self.cur_token.text)
+        self.next_token()
+        self.emitter.emit(")")
 
     def statement(self):
         if self.check_token(TokenType.PRINT):
@@ -203,7 +208,8 @@ class Parser:
             while not self.check_token(TokenType.NEWLINE):
                 if self.cur_token.text not in self.symbols:
                     self.symbols.add(self.cur_token.text)
-                    self.emitter.header_line("float " + self.cur_token.text + ";")
+                    self.emitter.header_line(
+                        "float " + self.cur_token.text + ";")
 
                 self.emitter.emit(f">>{self.cur_token.text}")
                 self.match(TokenType.IDENT)

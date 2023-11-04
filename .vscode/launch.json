@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": ".",
-      "program": "build/Debug/outDebug",
+      "cwd": "d:/Laptop Backup 2023 October/Works/Coding/Rohit Scholarship/not-python",
+      "program": "d:/Laptop Backup 2023 October/Works/Coding/Rohit Scholarship/not-python/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
