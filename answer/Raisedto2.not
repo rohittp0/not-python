@@ -1,0 +1,6 @@
+
+LET a = -3
+LET b = 3
+
+LET result = a**b
+PRINT result
