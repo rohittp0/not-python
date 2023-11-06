@@ -1,0 +1,8 @@
+PRINT "Enter first number"
+INPUT a
+PRINT "Enter second number"
+INPUT b
+
+LET c = a**b
+
+PRINT c
