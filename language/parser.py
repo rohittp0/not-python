@@ -74,14 +74,22 @@ class Parser:
         self.unary()
 
         while self.check_token(TokenType.ASTERISK) or self.check_token(TokenType.SLASH) or \
-                self.check_token(TokenType.MODULO):
+                self.check_token(TokenType.MODULO) or self.check_token(TokenType.EXP):
             self.emitter.emit(self.cur_token.text)
+
+            if self.check_token(TokenType.EXP):
+                self.emitter.emit("**")  # Use the ** operator for exponentiation
+            else:
+                self.emitter.emit(self.cur_token.text)
+                self.next_token()
 
             if self.check_token(TokenType.MODULO):
                 self.emitter.emit("(int)")
 
-            self.next_token()
             self.unary()
+
+        if self.check_token(TokenType.EXP):
+            self.emitter.emit(")")
 
     def expression(self):
         self.term()

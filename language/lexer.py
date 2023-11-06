@@ -55,9 +55,17 @@ class Lexer:
         elif self.curChar == '-':
             return(Token(self.curChar, TokenType.MINUS))
         elif self.curChar == '*':
-            return(Token(self.curChar, TokenType.ASTERISK))
+            # Check whether this token is * or **
+            if self.peek() == '*':
+                lastChar = self.curChar
+                self.next_char()
+                return (Token(lastChar + self.curChar, TokenType.EXP))
+            else:
+                return(Token(self.curChar, TokenType.ASTERISK))
         elif self.curChar == '/':
             return(Token(self.curChar, TokenType.SLASH))
+        elif self.curChar == '**':
+            return(Token(self.curChar, TokenType.EXP))
         elif self.curChar == '%':
             return(Token(self.curChar, TokenType.MODULO))
         elif self.curChar == '=':
@@ -155,6 +163,12 @@ class Lexer:
 
         token = (self.parse_special_symbols() or self.parse_operators() or
                  self.parse_literals() or self.parse_brackets())
+        
+        if self.curChar == '*':
+            self.next_char()
+            if self.curChar == '*':
+                self.next_char()
+                return Token(TokenType.EXP, "**")
 
         if token is None:
             raise UnknownTokenError(self.curChar, self.curPos)
