@@ -3,6 +3,7 @@ from language.emitter import Emitter
 from language.errors.parseing_error import ExpectedTokenError, InvalidTokenError, UndefinedVariableError
 from language.lexer import Lexer, Token
 
+expF=False
 
 class Variable:
     def __init__(self, name, value):
@@ -48,8 +49,15 @@ class Parser:
             self.next_token()
 
     def primary(self):
+        global expF
         if self.check_token(TokenType.NUMBER):
+            if self.check_peek(TokenType.EXPOD): # pow( should be present before our number
+                    self.emitter.emit("pow(")
+                    expF=False
             self.emitter.emit(self.cur_token.text)
+            if expF:
+                self.emitter.emit(")")
+                expF=False
             self.next_token()
 
         elif self.check_token(TokenType.IDENT):
@@ -65,17 +73,24 @@ class Parser:
         if self.check_token(TokenType.PLUS) or self.check_token(TokenType.MINUS):
             self.emitter.emit(self.cur_token.text)
             self.next_token()
+        
         self.primary()
 
     def term(self):
+        global expF
         if self.check_peek(TokenType.MODULO):
             self.emitter.emit("(int)")
 
         self.unary()
 
         while self.check_token(TokenType.ASTERISK) or self.check_token(TokenType.SLASH) or \
-                self.check_token(TokenType.MODULO):
-            self.emitter.emit(self.cur_token.text)
+                self.check_token(TokenType.MODULO) or self.check_token(TokenType.EXPOD):
+            
+            if self.check_token(TokenType.EXPOD): # , used in parameter seperation of pow function
+                self.emitter.emit(",")
+                expF=True
+            else :
+                self.emitter.emit(self.cur_token.text)
 
             if self.check_token(TokenType.MODULO):
                 self.emitter.emit("(int)")
@@ -127,6 +142,7 @@ class Parser:
         self.emitter.emit_line("}")
 
     def statement(self):
+        global expF
         if self.check_token(TokenType.PRINT):
             self.next_token()
             self.emitter.emit(f"std::cout")
@@ -138,7 +154,6 @@ class Parser:
                 else:
                     self.emitter.emit("<<")
                     self.expression()
-
             self.emitter.emit_line(";")
 
         elif self.check_token(TokenType.IF):
@@ -182,6 +197,9 @@ class Parser:
             self.match(TokenType.EQ)
 
             self.expression()
+            if expF:
+                self.emitter.emit(")")
+                expF=False
             self.emitter.emit_line(";")
 
         elif self.check_token(TokenType.INPUT):
@@ -209,6 +227,7 @@ class Parser:
 
     def program(self):
         self.emitter.header_line("#include <iostream>")
+        self.emitter.header_line("#include <cmath>")
         self.emitter.header_line("int main(int argc, char *argv[]){")
 
         while self.check_token(TokenType.NEWLINE):
